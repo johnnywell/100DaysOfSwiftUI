@@ -13,16 +13,19 @@ struct AddBookView: View {
     
     @State private var title = ""
     @State private var author = ""
-    @State private var rating = 3
+    @State private var rating = 0
     @State private var genre = ""
     @State private var review = ""
+    @State private var date = Date()
     
-    let genres = ["Fantasy", "Horror", "Kids", "Mistery", "Poetry", "Romance", "Thriller", "Sci-Fi"]
+    @State private var genreValidationMessage = ""
+    
+    let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller", "Sci-Fi"]
     
     var body: some View {
         NavigationView {
             Form {
-                Section {
+                Section(footer: Text(genreValidationMessage).foregroundColor(.red)) {
                     TextField("Name of book", text: $title)
                     TextField("AUthor's name", text: $author)
                     
@@ -39,19 +42,29 @@ struct AddBookView: View {
                 }
                 
                 Section {
+                    DatePicker("Read on", selection: $date, in: ...date, displayedComponents: [.date])
+                }
+                
+                Section {
                     Button("Save") {
-                        let newBook = Book(context: self.moc)
-                        newBook.title = self.title
-                        newBook.author = self.author
-                        newBook.rating = Int16(self.rating)
-                        newBook.genre = self.genre
-                        newBook.review = self.review
-                        
-                        try? self.moc.save()
-                        
-                        self.presentationMode.wrappedValue.dismiss()
+                        if self.genre == "" {
+                            self.genreValidationMessage = "You didn't select a genre"
+                        } else {
+                            let newBook = Book(context: self.moc)
+                            newBook.title = self.title
+                            newBook.author = self.author
+                            newBook.date = self.date
+                            newBook.rating = Int16(self.rating)
+                            newBook.genre = self.genre
+                            newBook.review = self.review
+                            
+                            try? self.moc.save()
+                            
+                            self.presentationMode.wrappedValue.dismiss()
+                        }
                     }
                 }
+                
             }
             .navigationBarTitle("Add Book")
         }

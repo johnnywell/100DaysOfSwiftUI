@@ -42,6 +42,10 @@ struct DetailView: View {
                 RatingView(rating: .constant(Int(self.book.rating)))
                     .font(.largeTitle)
                 
+                Text(self.book.date?.localized() ?? "Unknown reading date")
+                    .font(.footnote)
+                    .padding()
+                
                 Spacer()
             }
         }
